@@ -4,7 +4,8 @@ on:
     branches:
       - main
     paths:
-    - ./deploy/apps
+    - deploy/apps/backend
+    - deploy/apps/frontend
 jobs:
   deploy:
     name: deploy apps
