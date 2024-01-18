@@ -9,4 +9,4 @@ patches:
     patch: |-
       - op: replace
         path: "/spec/template/spec/containers/0/image"
-        value: "{replace}"
+        value:  "ghcr.io/rprakashg-redhat/rhacs-policy-management/backend@sha256:81d88eb521a476ad221e7eb9b24b6bbe6db0ad1f78d74ed51a44fff4bc96a4ed"
