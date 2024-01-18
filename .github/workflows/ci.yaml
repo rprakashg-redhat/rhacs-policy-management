@@ -4,7 +4,8 @@ on:
     branches:
       - main
     paths:
-    - ./apps
+    - ./apps/backend
+    - ./apps/frontend
 
 env:
   IMAGE_TAGS: ${{ github.sha }}
