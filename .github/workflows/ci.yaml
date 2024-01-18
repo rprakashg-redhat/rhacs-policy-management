@@ -64,6 +64,32 @@ jobs:
         extra-args: |
           --disable-content-trust
     outputs:
-      digest: ${{ steps.push-to-registry.outputs.digest }}
-    
+      digest: ${{ steps.push-to-registry.outputs.digest }}    
     needs: build
+
+  update-deployment-manifests:
+    name: update deployment artifacts
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: update overlay
+      working-directory: deploy/apps/backend
+      run: |
+        IMAGE=\"${{ env.IMAGE_REGISTRY }}/rhacs-policy-management/backend@${{ needs.containerize.outputs.digest }}\"
+        git checkout -b "${{ github.job }}-${{ github.sha }}"
+        sed -i "s#\(.*value:\s*\).*#\1 ${IMAGE}#" overlays/dev/kustomization.yaml
+
+        git add .
+        git commit -m "updated manifest to point to image tag $IMAGE"
+        git push origin "${{ github.job }}-${{ github.sha }}"
+    needs: containerize
+  
+  open-pr:
+    name: open pull request
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: create pr
+      run: |
+        gh create --body "PR for commit - ${{ github.sha }} by {{ github.actor }}" --title PR for commit - ${{ github.sha }}" --base main --head "update-deployment-manifests-${{ github.sha }}" 
+        

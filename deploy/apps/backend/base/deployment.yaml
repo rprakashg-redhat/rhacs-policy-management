@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: ormdemo
-        image: "ghcr.io/hibernate-reactive-panache-quickstart@sha256:952489da0b346752408ad7758963b0156b6a46f099d944c394f21a708395772b"
+        image: "{applied through kustomize}"
         imagePullPolicy: Always
         ports:
         - name: http
