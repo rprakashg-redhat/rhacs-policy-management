@@ -5,7 +5,7 @@ on:
       - main
     paths:
     - ./apps
-    
+
   workflow_dispatch:
 env:
   IMAGE_TAGS: ${{ github.sha }}
@@ -15,7 +15,7 @@ env:
 
 jobs:
   build:
-    name: build backend
+    name: build apps
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -26,15 +26,16 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: build
-        run: ./apps/backend/mvnw clean install
+        working-directory: ./apps/backend
+        run: ./mvnw clean install
       - name: upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: quarkus-app
-          path: /apps/backend/target/quarkus-app/
+          path: ./apps/backend/target/quarkus-app/
   
   containerize:
-    name: containerize backend app
+    name: containerize apps
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
