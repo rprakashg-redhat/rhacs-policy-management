@@ -103,4 +103,6 @@ jobs:
     - name: create pr
       run: |
         gh pr create --body "PR for commit - ${{ github.sha }} by {{ github.actor }}" --title "PR for commit - ${{ github.sha }}" --base main --head "update-deployment-manifests-${{ github.sha }}" 
+      env:
+        GH_TOKEN: ${{ github.token }}
     needs: update-deployment-manifests
