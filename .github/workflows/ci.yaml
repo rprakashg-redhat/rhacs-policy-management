@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: quarkus-app
-          path: target/quarkus-app/
+          path: apps/backend/target/quarkus-app/
   
   containerize:
     name: containerize apps
@@ -43,7 +43,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: quarkus-app
-        path: ./apps/backend/target/quarkus-app/
+        path: apps/backend/target/quarkus-app/
     - name: build image
       uses: redhat-actions/buildah-build@v2
       with:
