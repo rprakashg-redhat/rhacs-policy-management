@@ -16,6 +16,10 @@ jobs:
       run: |
         kubectl version --client=true
         aws --version
+    - name: get cluster credentials
+      run: |
+        aws eks update-kubeconfig --region ${{ vars.AWS_REGION }} --name ${{ vars.CLUSTER_NAME }}
+        kubectl get nodes
 
 
   
