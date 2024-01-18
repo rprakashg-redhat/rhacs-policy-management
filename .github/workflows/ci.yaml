@@ -1,0 +1,66 @@
+name: ci
+on:
+  push:
+    branches:
+      - main
+    paths:
+    - apps
+
+env:
+  IMAGE_TAGS: ${{ github.sha }}
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  REGISTRY_USER: ${{ github.actor }}
+  REGISTRY_PASSWORD: ${{ github.token }}
+
+jobs:
+  build:
+    name: build backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: build
+        run: ./apps/backend/mvnw clean install
+      - name: upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: quarkus-app
+          path: /apps/backend/target/quarkus-app/
+  
+  containerize:
+    name: containerize backend app
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: quarkus-app
+        path: ./apps/backend/target/quarkus-app/
+    - name: build image
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: hibernate-reactive-panache-quickstart
+        tags: ${{ env.IMAGE_TAGS }}
+        containerfiles: |
+          apps/backend/src/main/docker/Dockerfile.jvm
+    - name: push to registry
+      id: push-to-registry
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: hibernate-reactive-panache-quickstart
+        tags: ${{ env.IMAGE_TAGS }}
+        registry: ${{ env.IMAGE_REGISTRY }}
+        username: ${{ env.REGISTRY_USER }}
+        password: ${{ env.REGISTRY_PASSWORD }}
+        extra-args: |
+          --disable-content-trust
+    outputs:
+      digest: ${{ steps.push-to-registry.outputs.digest }}
+    
+    needs: build

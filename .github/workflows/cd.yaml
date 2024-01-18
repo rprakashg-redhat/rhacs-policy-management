@@ -1,0 +1,13 @@
+name: cd
+on:
+  push:
+    branches:
+      - main
+    paths:
+    - deploy/apps
+jobs:
+  deploy:
+    name: deploy apps
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
