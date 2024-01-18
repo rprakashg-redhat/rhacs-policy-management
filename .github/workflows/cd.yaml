@@ -28,7 +28,7 @@ jobs:
         kubectl create namespace "quarkus-quickstarts" --dry-run=client -o yaml | kubectl apply -f -
     - name: create image pull secret
       run: |
-        kubectl create secret docker-registry ghcr-creds --docker-server=https://ghcr.io --docker-username=rprakashg-redhat --docker-password=${{ secrets.IMAGE_PULL_TOKEN }} --docker-email=rgopinat@redhat.com
+        kubectl create secret -n "quarkus-quickstarts" docker-registry ghcr-creds --docker-server=https://ghcr.io --docker-username=rprakashg-redhat --docker-password=${{ secrets.IMAGE_PULL_TOKEN }} --docker-email=rgopinat@redhat.com
 
 
 
