@@ -12,14 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: download tools
-      run: |
-        # download required tools
-        mkdir $HOME/bin
     - name: verify tools installed
       run: |
-        kubectl version
+        kubectl version --client=true
         aws --version
-        
+
 
   
