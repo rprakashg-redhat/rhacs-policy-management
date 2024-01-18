@@ -10,6 +10,3 @@ patches:
       - op: replace
         path: "/spec/template/spec/containers/0/image"
         value: "{replace}"
-      - op: replace
-        path: "/spec/replicas"
-        value: 1

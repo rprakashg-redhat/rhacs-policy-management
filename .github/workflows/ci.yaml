@@ -101,5 +101,5 @@ jobs:
         git config --global user.name ${{ github.actor }}
     - name: create pr
       run: |
-        gh create --body "PR for commit - ${{ github.sha }} by {{ github.actor }}" --title PR for commit - ${{ github.sha }}" --base main --head "update-deployment-manifests-${{ github.sha }}" 
+        gh create --body "PR for commit - ${{ github.sha }} by {{ github.actor }}" --title "PR for commit - ${{ github.sha }}" --base main --head "update-deployment-manifests-${{ github.sha }}" 
     needs: update-deployment-manifests
