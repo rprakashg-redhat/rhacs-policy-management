@@ -51,7 +51,7 @@ jobs:
         tags: ${{ env.IMAGE_TAGS }}
         context: apps/backend
         containerfiles: |
-          ./src/main/docker/Dockerfile.jvm
+          apps/backend/src/main/docker/Dockerfile.jvm
     - name: push to registry
       id: push-to-registry
       uses: redhat-actions/push-to-registry@v2
