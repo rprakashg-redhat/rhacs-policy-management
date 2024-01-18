@@ -4,9 +4,7 @@ on:
     branches:
       - main
     paths:
-    - ./apps/backend
-    - ./apps/frontend
-
+    - ./apps/**
   workflow_dispatch:
 env:
   IMAGE_TAGS: ${{ github.sha }}
