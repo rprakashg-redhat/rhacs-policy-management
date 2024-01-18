@@ -23,6 +23,14 @@ jobs:
       run: |
         aws eks update-kubeconfig --region ${{ vars.AWS_REGION }} --name ${{ vars.CLUSTER_NAME }}
         kubectl get nodes
+    - name: create namespace
+      run: |
+        kubectl create namespace "quarkus-quickstarts" --dry-run=client -o yaml | kubectl apply -f -
+    - name: create image pull secret
+      run: |
+        kubectl create secret docker-registry ghcr-creds --docker-server=https://ghcr.io --docker-username=rprakashg-redhat --docker-password=${{ secrets.IMAGE_PULL_TOKEN }} --docker-email=rgopinat@redhat.com
+
+
 
 
   
