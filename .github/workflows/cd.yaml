@@ -33,7 +33,7 @@ jobs:
           --docker-email=rgopinat@redhat.com -o yaml | kubectl apply -f -
     - name: create database creds 
       run: |
-        kubectl create secret --dry-run=client generic db-creds \
+        kubectl create secret --dry-run=client -n "quarkus-quickstarts" generic db-creds \
           --from-literal=HOST="${{ secrets.DB_HOST}}" \
           --from-literal=DBNAME="${{ secrets.DBNAME }}" \
           --from-literal=DBUSER="${{ secrets.DBUSER }}" \
