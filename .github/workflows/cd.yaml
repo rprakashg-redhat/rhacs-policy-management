@@ -23,6 +23,7 @@ jobs:
       run: |
         aws eks update-kubeconfig --region ${{ vars.AWS_REGION }} --name ${{ vars.CLUSTER_NAME }}
         kubectl get nodes
+        kustomize version
     - name: create namespace
       run: |
         kubectl create namespace "quarkus-quickstarts" --dry-run=client -o yaml | kubectl apply -f -
@@ -38,6 +39,9 @@ jobs:
           --from-literal=DBNAME="${{ secrets.DBNAME }}" \
           --from-literal=DBUSER="${{ secrets.DBUSER }}" \
           --from-literal=DBPASSWORD="${{ secrets.DBPASSWORD }}" -o yaml | kubectl apply -f -
+    - name: deploy apps
+      run: |
+        echo "deploying applications to kubernetes"
 
 
   
