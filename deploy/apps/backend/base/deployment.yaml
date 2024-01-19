@@ -56,4 +56,4 @@ spec:
             cpu: 250m
             memory: 64Mi
       imagePullSecrets:
-      - ghcr-creds
+      - name: ghcr-creds
