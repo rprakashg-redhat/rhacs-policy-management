@@ -42,6 +42,6 @@ jobs:
     - name: deploy apps
       run: |
         echo "deploying applications to kubernetes"
-        kustomize build deploy/apps/backend/overlays/dev | kubectl apply -f - 
+        kustomize build deploy/apps/backend/overlays/dev | kubectl apply -n "quarkus-quickstarts" -f - 
 
   
