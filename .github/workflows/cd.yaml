@@ -26,15 +26,15 @@ jobs:
         kubectl get nodes
     - name: create namespace
       run: |
-        kubectl create namespace "quarkus-quickstarts" --dry-run=client -o yaml | kubectl apply -f -
+        kubectl create namespace "sessionize" --dry-run=client -o yaml | kubectl apply -f -
     - name: create image pull secret
       run: |
-        kubectl create secret --dry-run=client -n "quarkus-quickstarts" docker-registry ghcr-creds \
+        kubectl create secret --dry-run=client -n "sessionize" docker-registry ghcr-creds \
           --docker-server=https://ghcr.io --docker-username=rprakashg-redhat --docker-password=${{ secrets.IMAGE_PULL_TOKEN }} \
           --docker-email=rgopinat@redhat.com -o yaml | kubectl apply -f -
     - name: create database creds 
       run: |
-        kubectl create secret --dry-run=client -n "quarkus-quickstarts" generic db-connection-properties \
+        kubectl create secret --dry-run=client -n "sessionize" generic db-connection-properties \
           --from-literal=DBHOST="${{ secrets.DB_HOST}}" \
           --from-literal=DBNAME="${{ secrets.DBNAME }}" \
           --from-literal=DBUSER="${{ secrets.DBUSER }}" \
@@ -42,6 +42,6 @@ jobs:
     - name: deploy apps
       run: |
         echo "deploying applications to kubernetes"
-        kustomize build deploy/apps/backend/overlays/dev | kubectl apply -n "quarkus-quickstarts" -f - 
+        kustomize build deploy/apps/backend/overlays/dev | kubectl apply -n "sessionize" -f - 
 
   
