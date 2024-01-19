@@ -27,26 +27,26 @@ spec:
         - name: POSTGRESCLUSTER_USER
           valueFrom:
             secretKeyRef:
-              name: hippo-pguser-hippo
-              key: user
+              name: db-connection-properties
+              key: DBUSER
               optional: false
         - name: POSTGRESCLUSTER_USER_PWD
           valueFrom:
             secretKeyRef:
-              name: hippo-pguser-hippo
-              key: password
+              name: db-connection-properties
+              key: DBPASSWORD
               optional: false
         - name: HOST
           valueFrom:
             secretKeyRef:
-              name: hippo-pguser-hippo
-              key: host
+              name: db-connection-properties
+              key: DBHOST
               optional: false
         - name: DBNAME
           valueFrom:
             secretKeyRef:
-              name: hippo-pguser-hippo
-              key: dbname
+              name: db-connection-properties
+              key: DBNAME
               optional: false
         resources:
           limits:
