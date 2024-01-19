@@ -37,7 +37,7 @@ jobs:
           --from-literal=HOST=${{ secrets.DB_HOST}} \
           --from-literal=DBNAME=${{ secrets.DBNAME }} \
           --from-literal=DBUSER=${{ secrets.DBUSER }} \
-          --from-literal=DBPASSWORD=${{ secrets.DBPASSWORD }} -o yaml | kubectl apply -f -
+          --from-literal=DBPASSWORD=${{ secrets.DBPASSWORD }} -o yaml
 
 
   
