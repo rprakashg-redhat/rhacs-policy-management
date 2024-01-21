@@ -5,9 +5,9 @@ RUN npm install --global yarn -s &>/dev/null
 COPY  ./package*.json .
 RUN yarn install --frozen-lockfile --production 
 COPY dist  .
-
+RUN ls 
 ENV NODE_ENV=production
 
 EXPOSE 4000
 
-CMD [ "node", "./dist/index.js" ]
+CMD [ "node", "index.js" ]
