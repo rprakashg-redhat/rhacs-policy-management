@@ -21,6 +21,8 @@ jobs:
       digest: ${{ steps.push-to-registry.outputs.digest }}
     steps:
       - uses: actions/checkout@v3
+      - name: Reclaim cache directory
+        run: chown -R 1001:1001 /github/home/.cache && echo "pwn dat cache"
       - name: build container image
         uses: redhat-actions/buildah-build@v2
         with:
