@@ -54,28 +54,6 @@ jobs:
           extra-args: |
             --disable-content-trust
         
-  update-backend-service-manifests:
-    name: update backend service deployment manifests
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: setup git
-      run: |
-        # Setting up the git config.
-        git config --global user.email "rgopinat@redhat.com" # HARD CODING FOR NOW, NEED TO DETERMINE HOW TO RETRIEVE THIS FROM CURRENT USER CONTEXT
-        git config --global user.name ${{ github.actor }}
-    - name: update deployment manifest for backend microservice
-      working-directory: deploy/apps/backend
-      run: |
-        IMAGE=\"${{ env.IMAGE_REGISTRY }}/rhacs-policy-management/backend@${{ needs.build-backend.outputs.digest }}\"
-        git checkout -b "${{ github.actor }}-${{ github.sha }}"
-        sed -i "s#\(.*value:\s*\).*#\1 ${IMAGE}#" overlays/dev/kustomization.yaml
-
-        git add .
-        git commit -m "updated manifest to point to image tag $IMAGE"
-        git push origin "${{ github.actor }}-${{ github.sha }}"
-    needs: build-backend
-
   build-graph:
     name: build graphql server microservice
     runs-on: ubuntu-latest
@@ -116,8 +94,8 @@ jobs:
           extra-args: |
             --disable-content-trust
 
-  update-graph-manifests:
-    name: update graph manifests
+  update-deployment-manifests:
+    name: update deployment manifests
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -127,16 +105,24 @@ jobs:
         git config --global user.email "rgopinat@redhat.com" # HARD CODING FOR NOW, NEED TO DETERMINE HOW TO RETRIEVE THIS FROM CURRENT USER CONTEXT
         git config --global user.name ${{ github.actor }}
     - name: update deployment manifest for backend microservice
-      working-directory: deploy/apps/graph
+      working-directory: deploy/apps/backend
       run: |
-        IMAGE=\"${{ env.IMAGE_REGISTRY }}/rhacs-policy-management/graph@${{ needs.build-graph.outputs.digest }}\"
         git checkout -b "${{ github.actor }}-${{ github.sha }}"
+        IMAGE=\"${{ env.IMAGE_REGISTRY }}/rhacs-policy-management/backend@${{ needs.build-backend.outputs.digest }}\"
         sed -i "s#\(.*value:\s*\).*#\1 ${IMAGE}#" overlays/dev/kustomization.yaml
 
         git add .
         git commit -m "updated manifest to point to image tag $IMAGE"
-        git push origin "${{ github.actor }}-${{ github.sha }}"
-    needs: build-graph
+        git push origin "${{ github.job }}-${{ github.sha }}"
+    - name: update deployment manifest for graphql server
+      working-directory: deploy/apps/graph
+      run: |
+        IMAGE=\"${{ env.IMAGE_REGISTRY }}/rhacs-policy-management/graph@${{ needs.build-graph.outputs.digest }}\"
+        sed -i "s#\(.*value:\s*\).*#\1 ${IMAGE}#" overlays/dev/kustomization.yaml
+        git add .
+        git commit -m "updated manifest to point to image tag $IMAGE"
+        git push origin "${{ github.job }}-${{ github.sha }}"
+    needs: [build-backend, build-graph]
 
   #open pull request on merge will trigger deployment workflow
   open-pr:
@@ -151,7 +137,7 @@ jobs:
         git config --global user.name ${{ github.actor }}
     - name: create pr
       run: |
-        gh pr create --body "PR for commit - ${{ github.sha }} by {{ github.actor }}" --title "PR for commit - ${{ github.sha }}" --base main --head "{{ github.actor }}-${{ github.sha }}" 
+        gh pr create --body "PR for commit - ${{ github.sha }} by {{ github.actor }}" --title "PR for commit - ${{ github.sha }}" --base main --head "update-deployment-manifests-${{ github.sha }}" 
       env:
         GH_TOKEN: ${{ github.token }}
-    needs: [update-backend-service-manifests, update-graph-manifests]
+    needs: [update-deployment-manifests]
