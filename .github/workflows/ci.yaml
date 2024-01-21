@@ -26,27 +26,32 @@ jobs:
           node-version: '18'
           cache: 'yarn'
           cache-dependency-path: apps/graph/yarn.lock
-      - name: Reclaim cache directory
-        run: chown -R 1001:1001 /github/home/.cache && echo "pwn dat cache"
-      - name: build container image
-        uses: redhat-actions/buildah-build@v2
-        with:
-          image: rhacs-policy-management/graph
-          tags: ${{ env.IMAGE_TAGS }}
-          context: apps/graph
-          containerfiles: |
-            apps/graph/Dockerfile
-      - name: push container image to registry
-        id: push-to-registry
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          image: rhacs-policy-management/graph
-          tags: ${{ env.IMAGE_TAGS }}
-          registry: ${{ env.IMAGE_REGISTRY }}
-          username: ${{ env.REGISTRY_USER }}
-          password: ${{ env.REGISTRY_PASSWORD }}
-          extra-args: |
-            --disable-content-trust
+      - name: build
+        working-directory: apps/graph
+        run: |
+          yarn run build
+      - run: ls -l /dist
+        working-directory: apps/graph
+
+      #- name: build container image
+      #  uses: redhat-actions/buildah-build@v2
+      #  with:
+      #    image: rhacs-policy-management/graph
+      #    tags: ${{ env.IMAGE_TAGS }}
+      #    context: apps/graph
+      #    containerfiles: |
+      #      apps/graph/Dockerfile
+      #- name: push container image to registry
+      #  id: push-to-registry
+      #  uses: redhat-actions/push-to-registry@v2
+      #  with:
+      #    image: rhacs-policy-management/graph
+      #    tags: ${{ env.IMAGE_TAGS }}
+      #    registry: ${{ env.IMAGE_REGISTRY }}
+      #    username: ${{ env.REGISTRY_USER }}
+      #    password: ${{ env.REGISTRY_PASSWORD }}
+      #    extra-args: |
+      #      --disable-content-trust
 
   update-graph-manifests:
     name: update graph manifests
