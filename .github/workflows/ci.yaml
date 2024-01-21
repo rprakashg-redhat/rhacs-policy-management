@@ -20,9 +20,11 @@ jobs:
     outputs:
       digest: ${{ steps.push-to-registry.outputs.digest }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Reclaim cache directory
-        run: chown -R 1001:1001 /github/home/.cache && echo "pwn dat cache"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'yarn'
       - name: build container image
         uses: redhat-actions/buildah-build@v2
         with:
