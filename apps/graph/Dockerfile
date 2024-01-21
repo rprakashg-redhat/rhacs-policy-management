@@ -4,7 +4,6 @@ USER 1001
 
 WORKDIR /usr/src/app
 
-
 RUN npm install --global yarn -s &>/dev/null
 
 COPY --chown=1001:1001 package*.json ./
