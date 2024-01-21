@@ -1,4 +1,4 @@
-name: ci for java/quarkus backend service
+name: ci
 on:
   push:
     branches:
