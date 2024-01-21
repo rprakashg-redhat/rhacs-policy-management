@@ -26,6 +26,8 @@ jobs:
           node-version: '18'
           cache: 'yarn'
           cache-dependency-path: apps/graph/yarn.lock
+      - name: Reclaim cache directory
+        run: chown -R 1001:1001 /github/home/.cache && echo "pwn dat cache"
       - name: build container image
         uses: redhat-actions/buildah-build@v2
         with:
