@@ -34,7 +34,7 @@ jobs:
         working-directory: apps/graph
         run: |
           yarn run build
-      - run: ls -l dis
+      - run: ls -l dist
         working-directory: apps/graph
 
       #- name: build container image
