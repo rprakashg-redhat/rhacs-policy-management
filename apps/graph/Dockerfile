@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/nodejs-18 AS builder
+FROM registry.access.redhat.com/ubi8/nodejs-16 AS builder
 
 USER 1001
 
@@ -19,7 +19,7 @@ COPY --chown=1001:1001 prisma prisma
 
 RUN yarn run build
 
-FROM registry.access.redhat.com/ubi8/nodejs-18
+FROM registry.access.redhat.com/ubi8/nodejs-16-minimal
 
 USER 1001
 
