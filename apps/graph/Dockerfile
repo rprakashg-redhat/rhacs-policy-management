@@ -1,7 +1,9 @@
 FROM registry.access.redhat.com/ubi8/nodejs-18 AS builder
 
-WORKDIR /usr/src/app
 USER 1001
+
+WORKDIR /usr/src/app
+
 
 RUN npm install --global yarn -s &>/dev/null
 
@@ -19,8 +21,9 @@ RUN yarn run build
 
 FROM registry.access.redhat.com/ubi8/nodejs-18
 
-WORKDIR /usr/src/app
 USER 1001
+
+WORKDIR /usr/src/app
 
 RUN npm install --global yarn -s &>/dev/null
 
