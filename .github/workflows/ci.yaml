@@ -26,6 +26,10 @@ jobs:
           node-version: '18'
           cache: 'yarn'
           cache-dependency-path: apps/graph/yarn.lock
+      - name: install dependencies
+        working-directory: apps/graph
+        run: |
+          yarn install --frozen-lockfile
       - name: build
         working-directory: apps/graph
         run: |
@@ -53,42 +57,42 @@ jobs:
       #    extra-args: |
       #      --disable-content-trust
 
-  update-graph-manifests:
-    name: update graph manifests
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: setup git
-      run: |
-        # Setting up the git config.
-        git config --global user.email "rgopinat@redhat.com" # HARD CODING FOR NOW, NEED TO DETERMINE HOW TO RETRIEVE THIS FROM CURRENT USER CONTEXT
-        git config --global user.name ${{ github.actor }}
-    - name: update deployment manifest for backend microservice
-      working-directory: deploy/apps/graph
-      run: |
-        IMAGE=\"${{ env.IMAGE_REGISTRY }}/rhacs-policy-management/graph@${{ needs.build-graph.outputs.digest }}\"
-        git checkout -b "${{ github.actor }}-${{ github.sha }}"
-        sed -i "s#\(.*value:\s*\).*#\1 ${IMAGE}#" overlays/dev/kustomization.yaml
+  #update-graph-manifests:
+    #name: update graph manifests
+    #runs-on: ubuntu-latest
+    #steps:
+    #- uses: actions/checkout@v3
+    #- name: setup git
+    #  run: |
+    #    # Setting up the git config.
+    #    git config --global user.email "rgopinat@redhat.com" # HARD CODING FOR NOW, NEED TO DETERMINE HOW TO RETRIEVE THIS FROM CURRENT USER CONTEXT
+    #    git config --global user.name ${{ github.actor }}
+    #- name: update deployment manifest for backend microservice
+    #  working-directory: deploy/apps/graph
+    #  run: |
+    #    IMAGE=\"${{ env.IMAGE_REGISTRY }}/rhacs-policy-management/graph@${{ needs.build-graph.outputs.digest }}\"
+    #    git checkout -b "${{ github.actor }}-${{ github.sha }}"
+    #    sed -i "s#\(.*value:\s*\).*#\1 ${IMAGE}#" overlays/dev/kustomization.yaml
 
-        git add .
-        git commit -m "updated manifest to point to image tag $IMAGE"
-        git push origin "${{ github.actor }}-${{ github.sha }}"
-    needs: build-graph
+    #    git add .
+    #    git commit -m "updated manifest to point to image tag $IMAGE"
+    #    git push origin "${{ github.actor }}-${{ github.sha }}"
+    #needs: build-graph
 
   #open pull request on merge will trigger deployment workflow
-  open-pr:
-    name: open pull request
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: setup git
-      run: |
-        # Setting up the git config.
-        git config --global user.email "rgopinat@redhat.com" # HARD CODING FOR NOW, NEED TO DETERMINE HOW TO RETRIEVE THIS FROM CURRENT USER CONTEXT
-        git config --global user.name ${{ github.actor }}
-    - name: create pr
-      run: |
-        gh pr create --body "PR for commit - ${{ github.sha }} by {{ github.actor }}" --title "PR for commit - ${{ github.sha }}" --base main --head "{{ github.actor }}-${{ github.sha }}" 
-      env:
-        GH_TOKEN: ${{ github.token }}
-    needs: [update-graph-manifests]
+  #open-pr:
+    #name: open pull request
+    #runs-on: ubuntu-latest
+    #steps:
+    #- uses: actions/checkout@v3
+    #- name: setup git
+    #  run: |
+    #    # Setting up the git config.
+    #    git config --global user.email "rgopinat@redhat.com" # HARD CODING FOR NOW, NEED TO DETERMINE HOW TO RETRIEVE THIS FROM CURRENT USER CONTEXT
+    #    git config --global user.name ${{ github.actor }}
+    #- name: create pr
+    #  run: |
+    #    gh pr create --body "PR for commit - ${{ github.sha }} by {{ github.actor }}" --title "PR for commit - ${{ github.sha }}" --base main --head "{{ github.actor }}-${{ github.sha }}" 
+    #  env:
+    #    GH_TOKEN: ${{ github.token }}
+    #needs: [update-graph-manifests]
