@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graph
+  labels:
+    app: graph
+    role: experience
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: graph
+      role: experience
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+      labels:
+        app: graph
+        role: experience
+    spec:
+      containers:
+      - name: graph
+        image: "{applied through kustomize}"
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 4000
+        env:
+        - name: SCHEDULER_SERVICE
+          value: "eventscheduler"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-connection-properties
+              key: DATABASE_URL
+              optional: false
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 64Mi
+      imagePullSecrets:
+      - name: ghcr-creds

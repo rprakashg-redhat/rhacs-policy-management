@@ -39,6 +39,12 @@ jobs:
           --from-literal=DBNAME="${{ secrets.DBNAME }}" \
           --from-literal=DBUSER="${{ secrets.DBUSER }}" \
           --from-literal=DBPASSWORD="${{ secrets.DBPASSWORD }}" -o yaml | kubectl apply -f -
+    - name: create mongodb atlas
+      run: |
+        kubectl create secret --dry-run=client -n "sessionize" generic mongodb-connection-properties \
+          --from-literal=DATABASE_URL="mongodb://${{ secrets.MONGODB_USER }}:${{ secrets.MONGODB_USER_PASSWORD }}@${{ secrets.MONGODB_HOST }}/${{ secrets.MONGODB_DB_NAME }}" \
+          -o yaml | kubectl apply -f -
+
     - name: deploy apps
       run: |
         echo "deploying applications to kubernetes"
