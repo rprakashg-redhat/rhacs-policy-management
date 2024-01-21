@@ -1,14 +1,16 @@
 FROM registry.access.redhat.com/ubi8/nodejs-18-minimal
 
+RUN mkdir -p /home/app/node_modules && chown -R 1001:1001 /home/app
+
 USER 1001
 
 WORKDIR /home/app
 
 RUN npm install --global yarn -s &>/dev/null
 
-COPY --chown=1001:1001 ./package*.json .
+COPY  ./package*.json .
 RUN yarn install --frozen-lockfile --production 
-COPY --chown=1001:1001 dist  .
+COPY dist  .
 
 ENV NODE_ENV=production
 
