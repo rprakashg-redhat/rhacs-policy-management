@@ -13,6 +13,68 @@ env:
   REGISTRY_PASSWORD: ${{ github.token }}
 
 jobs:
+  build-backend:
+    name: build java/quarkus based backend microservice 
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.push-to-registry.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup git
+        run: |
+          # Setting up the git config.
+          git config --global user.email "rgopinat@redhat.com" # HARD CODING FOR NOW, NEED TO DETERMINE HOW TO RETRIEVE THIS FROM CURRENT USER CONTEXT
+          git config --global user.name ${{ github.actor }}
+      - name: setup java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: maven build
+        working-directory: ./apps/backend
+        run: ./mvnw clean install
+      - name: container build
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: rhacs-policy-management/backend
+          tags: ${{ env.IMAGE_TAGS }}
+          context: apps/backend
+          containerfiles: |
+            apps/backend/src/main/docker/Dockerfile.jvm
+      - name: push to github registry
+        id: push-to-registry
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: rhacs-policy-management/backend
+          tags: ${{ env.IMAGE_TAGS }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+          extra-args: |
+            --disable-content-trust
+        
+  update-backend-service-manifests:
+    name: update backend service deployment manifests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: setup git
+      run: |
+        # Setting up the git config.
+        git config --global user.email "rgopinat@redhat.com" # HARD CODING FOR NOW, NEED TO DETERMINE HOW TO RETRIEVE THIS FROM CURRENT USER CONTEXT
+        git config --global user.name ${{ github.actor }}
+    - name: update deployment manifest for backend microservice
+      working-directory: deploy/apps/backend
+      run: |
+        IMAGE=\"${{ env.IMAGE_REGISTRY }}/rhacs-policy-management/backend@${{ needs.build-backend.outputs.digest }}\"
+        git checkout -b "${{ github.actor }}-${{ github.sha }}"
+        sed -i "s#\(.*value:\s*\).*#\1 ${IMAGE}#" overlays/dev/kustomization.yaml
+
+        git add .
+        git commit -m "updated manifest to point to image tag $IMAGE"
+        git push origin "${{ github.actor }}-${{ github.sha }}"
+    needs: build-backend
 
   build-graph:
     name: build graphql server microservice
@@ -54,42 +116,42 @@ jobs:
           extra-args: |
             --disable-content-trust
 
-  #update-graph-manifests:
-    #name: update graph manifests
-    #runs-on: ubuntu-latest
-    #steps:
-    #- uses: actions/checkout@v3
-    #- name: setup git
-    #  run: |
-    #    # Setting up the git config.
-    #    git config --global user.email "rgopinat@redhat.com" # HARD CODING FOR NOW, NEED TO DETERMINE HOW TO RETRIEVE THIS FROM CURRENT USER CONTEXT
-    #    git config --global user.name ${{ github.actor }}
-    #- name: update deployment manifest for backend microservice
-    #  working-directory: deploy/apps/graph
-    #  run: |
-    #    IMAGE=\"${{ env.IMAGE_REGISTRY }}/rhacs-policy-management/graph@${{ needs.build-graph.outputs.digest }}\"
-    #    git checkout -b "${{ github.actor }}-${{ github.sha }}"
-    #    sed -i "s#\(.*value:\s*\).*#\1 ${IMAGE}#" overlays/dev/kustomization.yaml
+  update-graph-manifests:
+    name: update graph manifests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: setup git
+      run: |
+        # Setting up the git config.
+        git config --global user.email "rgopinat@redhat.com" # HARD CODING FOR NOW, NEED TO DETERMINE HOW TO RETRIEVE THIS FROM CURRENT USER CONTEXT
+        git config --global user.name ${{ github.actor }}
+    - name: update deployment manifest for backend microservice
+      working-directory: deploy/apps/graph
+      run: |
+        IMAGE=\"${{ env.IMAGE_REGISTRY }}/rhacs-policy-management/graph@${{ needs.build-graph.outputs.digest }}\"
+        git checkout -b "${{ github.actor }}-${{ github.sha }}"
+        sed -i "s#\(.*value:\s*\).*#\1 ${IMAGE}#" overlays/dev/kustomization.yaml
 
-    #    git add .
-    #    git commit -m "updated manifest to point to image tag $IMAGE"
-    #    git push origin "${{ github.actor }}-${{ github.sha }}"
-    #needs: build-graph
+        git add .
+        git commit -m "updated manifest to point to image tag $IMAGE"
+        git push origin "${{ github.actor }}-${{ github.sha }}"
+    needs: build-graph
 
   #open pull request on merge will trigger deployment workflow
-  #open-pr:
-    #name: open pull request
-    #runs-on: ubuntu-latest
-    #steps:
-    #- uses: actions/checkout@v3
-    #- name: setup git
-    #  run: |
-    #    # Setting up the git config.
-    #    git config --global user.email "rgopinat@redhat.com" # HARD CODING FOR NOW, NEED TO DETERMINE HOW TO RETRIEVE THIS FROM CURRENT USER CONTEXT
-    #    git config --global user.name ${{ github.actor }}
-    #- name: create pr
-    #  run: |
-    #    gh pr create --body "PR for commit - ${{ github.sha }} by {{ github.actor }}" --title "PR for commit - ${{ github.sha }}" --base main --head "{{ github.actor }}-${{ github.sha }}" 
-    #  env:
-    #    GH_TOKEN: ${{ github.token }}
-    #needs: [update-graph-manifests]
+  open-pr:
+    name: open pull request
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: setup git
+      run: |
+        # Setting up the git config.
+        git config --global user.email "rgopinat@redhat.com" # HARD CODING FOR NOW, NEED TO DETERMINE HOW TO RETRIEVE THIS FROM CURRENT USER CONTEXT
+        git config --global user.name ${{ github.actor }}
+    - name: create pr
+      run: |
+        gh pr create --body "PR for commit - ${{ github.sha }} by {{ github.actor }}" --title "PR for commit - ${{ github.sha }}" --base main --head "{{ github.actor }}-${{ github.sha }}" 
+      env:
+        GH_TOKEN: ${{ github.token }}
+    needs: [update-backend-service-manifests, update-graph-manifests]
