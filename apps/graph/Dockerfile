@@ -8,7 +8,7 @@ RUN npm install --global yarn -s &>/dev/null
 
 COPY --chown=1001:1001 --from=builder /usr/src/app/package*.json/ .
 RUN yarn install --frozen-lockfile --production 
-COPY --chown=1001:1001 --from=builder /usr/src/app/dist/ dist/
+COPY --chown=1001:1001 dist  ./dist
 
 ENV NODE_ENV=production
 
