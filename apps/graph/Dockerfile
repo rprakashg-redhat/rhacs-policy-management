@@ -1,8 +1,8 @@
 FROM registry.access.redhat.com/ubi8/nodejs-18-minimal
 
-RUN mkdir -p /home/app/node_modules && chown -R 1001:1001 /home/app
-
 USER 1001
+
+RUN mkdir -p /home/app/node_modules && chown -R 1001:1001 /home/app
 
 WORKDIR /home/app
 
