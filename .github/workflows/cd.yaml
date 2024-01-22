@@ -6,6 +6,12 @@ on:
     paths:
       - "deploy/apps/**"
   workflow_dispatch:
+    inputs:
+      generate-netpol:
+        type: boolean
+        description: 'Generate network policies'
+        required: false
+        default: false
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -50,4 +56,17 @@ jobs:
         echo "deploying applications to kubernetes"
         kustomize build deploy/apps/overlays/dev | kubectl apply -n "sessionize" -f - 
 
-  
+    - name: save manifests to tmp dir
+      run: |
+        mkdir ${{ runner.temp }}/k8s
+        kustomize build deploy/apps/overlays/dev --output ${{ runner.temp }}/k8s 
+        ls -l ${{ runner.temp }}/k8s
+    #- name: generate network policies
+    #  if: ${{ inputs.generate-netpol }}
+    #  uses: ./.github/actions/roxctl
+    #  with:
+    #    central-endpoint:
+    #    api-token:
+    #    manifests-dir:
+    #    output-dir:
+        

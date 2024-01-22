@@ -1,0 +1,34 @@
+name: roxctl
+description: Roxctl command
+inputs:
+  central-endpoint:
+    description: 'Central endpoint in the format stackrox.contoso.com:443'
+    required: true
+  api-token:
+    description: 'API token with CI permissions'
+    required: true
+  manifests-dir:
+    description: directory where application manifests are stored
+    required: true
+  output-dir:
+    description: directory where generated netpol resources yaml files should be stored
+    required: true
+  skip-tls-verify:
+    description: 'Skip TLS certificate validation'
+    required: false
+    default: 'false'
+runs:
+  using: "composite"
+  steps:
+    - run: >
+        curl -s -k -L -H "Authorization: Bearer ${{ inputs.api-token }}" https://${{ inputs.central-endpoint }}:443/api/cli/download/roxctl-linux --output ./roxctl
+      shell: bash
+    - run: chmod +x ./roxctl
+      shell: bash
+    - id: generate-netpol
+      run: |
+        ./roxctl netpol generate ${{ inputs.manifests-dir }} --output-dir ${{ inputs.output-dir }}
+      shell: bash
+      env:
+        ROX_API_TOKEN: ${{ inputs.api-token }}
+        ROX_INSECURE_CLIENT_SKIP_TLS_VERIFY: ${{ inputs.skip-tls-verify }}  

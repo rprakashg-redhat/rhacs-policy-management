@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Apollo GraphQL Server implemented in Typescript",
   "main": "index.js",
-  "repository": "https://github.com/rprakashg/msaday22",
+  "repository": "https://github.com/rprakashg-redhat/rhacs-policy-management",
   "author": "Ram Gopinathan",
   "license": "MIT",
   "private": true,
