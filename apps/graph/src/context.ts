@@ -7,7 +7,7 @@ export interface Context {
     db: ReviewsDB
 }
 const serviceName = process.env.SCHEDULER_SERVICE;
-const api = new SchedulerAPI("http://" + serviceName)
+const api = new SchedulerAPI("http://" + serviceName + ":8080")
 const db = new ReviewsDB();
 
 export const context = ({ req }: { req: Request }): Context => {
