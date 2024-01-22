@@ -10,12 +10,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: >
-        echo "installing graphviz"
-        sudo apt-get install graphviz
-      shell: bash
-    - run: dot -V
-      shell: bash
+    - uses: ts-graphviz/setup-graphviz@v1
     - name: convert to png
       run: |
         dot -Tpng ${{ inputs.file }} > ${{ inputs.png }}
