@@ -5,7 +5,7 @@ import { context } from './context';
 export const server = new ApolloServer({ 
     schema: schema, 
     context: context,
-    cache: "bounded",
+    //cache: "bounded",
     persistedQueries: false,
     introspection: true
 });
