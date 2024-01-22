@@ -1,0 +1,21 @@
+name: graphviz
+description: convert dot files to png using graphviz
+inputs:
+  file:
+    description: dot file to convert to png
+    required: true
+  png: 
+    description: png file to output
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - run: >
+        echo "installing graphviz"
+        sudo apt install graphviz
+        dot -V
+      shell: bash
+    - name: convert to png
+      run: |
+        dot -Tpng ${{ inputs.file }} > ${{ inputs.png }}
+      shell: bash

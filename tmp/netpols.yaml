@@ -1,0 +1,69 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  labels:
+    network-policy-buildtime-generator.stackrox.io/generated: "true"
+  name: eventscheduler-netpol
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: graph
+          role: experience
+    ports:
+    - port: 8080
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app: eventscheduler
+      role: backend
+  policyTypes:
+  - Ingress
+  - Egress
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  labels:
+    network-policy-buildtime-generator.stackrox.io/generated: "true"
+  name: graph-netpol
+spec:
+  egress:
+  - ports:
+    - port: 8080
+      protocol: TCP
+    to:
+    - podSelector:
+        matchLabels:
+          app: eventscheduler
+          role: backend
+  - ports:
+    - port: 53
+      protocol: UDP
+    to:
+    - namespaceSelector: {}
+  podSelector:
+    matchLabels:
+      app: graph
+      role: experience
+  policyTypes:
+  - Ingress
+  - Egress
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  labels:
+    network-policy-buildtime-generator.stackrox.io/generated: "true"
+  name: default-deny-in-namespace
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress

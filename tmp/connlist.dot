@@ -1,0 +1,5 @@
+digraph {
+	"default/eventscheduler[Deployment]" [label="default/eventscheduler[Deployment]" color="blue" fontcolor="blue"]
+	"default/graph[Deployment]" [label="default/graph[Deployment]" color="blue" fontcolor="blue"]
+	"default/graph[Deployment]" -> "default/eventscheduler[Deployment]" [label="TCP 8080" color="gold2" fontcolor="darkgreen"]
+}

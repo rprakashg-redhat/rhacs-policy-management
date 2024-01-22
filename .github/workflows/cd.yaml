@@ -68,14 +68,7 @@ jobs:
       with:
         central-endpoint: ${{ secrets.ROX_CENTRAL_ENDPOINT}}
         api-token: ${{ secrets.ROX_API_TOKEN }}
-        manifests-dir: ${{ runner.temp }}/k8s
-        output-file: ${{ runner.temp }}/k8s/netpols.yaml
-
-    - name: deploy generated network policies to cluster
-      if: ${{ inputs.generate-netpol }}
-      run: |
-        echo "deploying generated network policies to clsuter"
-        cat ${{ runner.temp }}/k8s/netpols.yaml | kubectl apply -n "sessionize" -f -
+        args: "netpol generate ${{ runner.temp }}/k8s --output-file ${{ runner.temp }}/k8s/netpols.yaml"
 
     - name: save generated policies as artifact
       if: ${{ inputs.generate-netpol }}
@@ -83,3 +76,36 @@ jobs:
       with:
         name: network-policies
         path: ${{ runner.temp }}/k8s/netpols.yaml
+
+    - name: generate a connectivity map diagram
+      uses: ./.github/actions/roxctl
+      with:
+        central-endpoint: ${{ secrets.ROX_CENTRAL_ENDPOINT}}
+        api-token: ${{ secrets.ROX_API_TOKEN }}
+        args: "netpol connectivity map ${{ runner.temp }}/k8s --output-format=dot --save-to-file=true --save-to-file=${{ runner.temp }}/k8s/connlist.dot"
+    
+    - name: upload dot file artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: connectivity-map-dot
+        path: ${{ runner.temp }}/k8s/connlist.dot
+
+    - name: convert dot file to png using graphviz
+      uses: ./.github/actions/graphviz
+      with:
+        file: ${{ runner.temp }}/k8s/connlist.dot
+        png: ${{ runner.temp }}/k8s/connlist.png
+
+    - name: upload dot file artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: connectivity-map-png
+        path: ${{ runner.temp }}/k8s/connlist.png
+
+    - name: deploy generated network policies to cluster
+      if: ${{ inputs.generate-netpol }}
+      run: |
+        echo "deploying generated network policies to clsuter"
+        cat ${{ runner.temp }}/k8s/netpols.yaml | kubectl apply -n "sessionize" -f -
+
+    

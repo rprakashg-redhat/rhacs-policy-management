@@ -7,16 +7,9 @@ inputs:
   api-token:
     description: 'API token with CI permissions'
     required: true
-  manifests-dir:
-    description: directory where application manifests are stored
+  args:
+    description: 'Arguments to roxctl cli'
     required: true
-  output-file:
-    description: save and merge generated policies into a single yaml file
-    required: true
-  skip-tls-verify:
-    description: 'Skip TLS certificate validation'
-    required: false
-    default: 'false'
 runs:
   using: "composite"
   steps:
@@ -25,11 +18,8 @@ runs:
       shell: bash
     - run: chmod +x ./roxctl
       shell: bash
-    - name: help
-      run: ./roxctl --help
-      shell: bash
     - id: generate-netpol
       run: |
-        ./roxctl netpol generate ${{ inputs.manifests-dir }} --output-file ${{ inputs.output-file }}
+        ./roxctl ${{ inputs.args }}
       shell: bash
  
