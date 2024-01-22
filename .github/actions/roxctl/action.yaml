@@ -25,6 +25,9 @@ runs:
       shell: bash
     - run: chmod +x ./roxctl
       shell: bash
+    - name: help
+      run: ./roxctl --help
+      shell: bash
     - id: generate-netpol
       run: |
         ./roxctl netpol generate ${{ inputs.manifests-dir }} --output-file ${{ inputs.output-file }}
