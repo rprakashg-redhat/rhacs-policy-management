@@ -73,7 +73,10 @@ jobs:
       - name: build
         working-directory: apps/graph
         run: |
+          yarn run generate
           yarn run build
+        env:
+          DATABASE_URL: "mongodb://${{ secrets.MONGODB_USER }}:${{ secrets.MONGODB_USER_PASSWORD }}@${{ secrets.MONGODB_HOST }}/${{ secrets.MONGODB_DB_NAME }}"
       - name: build container image
         uses: redhat-actions/buildah-build@v2
         with:
