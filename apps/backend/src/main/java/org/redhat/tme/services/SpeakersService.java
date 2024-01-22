@@ -22,6 +22,8 @@ public class SpeakersService {
         return repository.getAllSpeakersForEvent(eventId);
     }
 
+    public List<Speaker> getSpeakersForSession(UUID sessionId) { return repository.getSpeakersForSession(sessionId); }
+
     public Speaker updateOrInsert(Speaker entity) {
         return repository.updateOrInsert(entity);
     }

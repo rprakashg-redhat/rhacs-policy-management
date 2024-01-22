@@ -17,6 +17,9 @@ public class SpeakersRepository implements PanacheRepository<Speaker> {
     public List<Speaker> getAllSpeakersForEvent(UUID eventId){
         return Speaker.find("#Speaker.findByEvent", eventId).list();
     }
+    public List<Speaker> getSpeakersForSession(UUID sessionId) {
+        return Speaker.find( "#Speaker.findBySession", sessionId).list();
+    }
     public Speaker updateOrInsert(Speaker entity) {
         Speaker fromDb = findSpeakerById(entity.getId());
         if (fromDb != null) {

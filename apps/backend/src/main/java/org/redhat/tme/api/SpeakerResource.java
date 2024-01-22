@@ -30,8 +30,11 @@ public class SpeakerResource {
     SpeakersService service;
 
     @GET
-    public Response getSpeakers(@QueryParam("eventId") UUID eventId) {
-        List<Speaker> speakers = service.getSpeakersForEvent(eventId);
+    public Response getSpeakers(@QueryParam("eventId") UUID eventId, @QueryParam("sessionId") UUID sessionId ) {
+        List<Speaker> speakers;
+
+        speakers = (eventId == null ? service.getSpeakersForSession(sessionId) : service.getSpeakersForEvent(eventId));
+
         return Response.ok(speakers)
                 .status(Response.Status.OK)
                 .build();
