@@ -72,11 +72,13 @@ jobs:
         output-file: ${{ runner.temp }}/k8s/netpols.yaml
 
     - name: deploy generated network policies to cluster
+      if: ${{ inputs.generate-netpol }}
       run: |
         echo "deploying generated network policies to clsuter"
         cat ${{ runner.temp }}/k8s/netpols.yaml | kubectl apply -n "sessionize" -f -
 
     - name: save generated policies as artifact
+      if: ${{ inputs.generate-netpol }}
       uses: actions/upload-artifact@v3
       with:
         name: network-policies
