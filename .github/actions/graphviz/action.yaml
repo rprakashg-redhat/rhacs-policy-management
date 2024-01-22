@@ -12,8 +12,9 @@ runs:
   steps:
     - run: >
         echo "installing graphviz"
-        sudo apt install graphviz
-        dot -V
+        apt install graphviz
+      shell: bash
+    - run: dot -V
       shell: bash
     - name: convert to png
       run: |
