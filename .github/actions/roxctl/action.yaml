@@ -28,10 +28,11 @@ runs:
     - name: help
       run: ./roxctl --help
       shell: bash
-    - id: generate-netpol
-      run: |
-        ./roxctl netpol generate ${{ inputs.manifests-dir }} --output-file ${{ inputs.output-file }}
-      shell: bash
       env:
         ROX_API_TOKEN: ${{ inputs.api-token }}
-        ROX_INSECURE_CLIENT_SKIP_TLS_VERIFY: ${{ inputs.skip-tls-verify }}  
+        ROX_INSECURE_CLIENT_SKIP_TLS_VERIFY: ${{ inputs.skip-tls-verify }} 
+    #- id: generate-netpol
+    #  run: |
+    #    ./roxctl netpol generate ${{ inputs.manifests-dir }} --output-file ${{ inputs.output-file }}
+    #  shell: bash
+ 
