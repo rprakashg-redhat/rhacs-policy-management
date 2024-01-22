@@ -2,24 +2,36 @@ package org.redhat.tme.repositories;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.redhat.tme.entities.Speaker;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @ApplicationScoped
 public class SpeakersRepository implements PanacheRepository<Speaker> {
+
+    @Inject
+    Session session ;
+
     public Speaker findSpeakerById(UUID speakerId) {
         return find("id", speakerId).firstResult();
     }
     public List<Speaker> getAllSpeakersForEvent(UUID eventId){
-        return Speaker.find("#Speaker.findByEvent", eventId).list();
+        Query<Speaker> q = session.createNamedQuery("Speaker.findByEvent", Speaker.class);
+        q.setParameter("eventId", eventId);
+
+        return q.getResultList();
     }
     public List<Speaker> getSpeakersForSession(UUID sessionId) {
-        return Speaker.find( "#Speaker.findBySession", sessionId).list();
+        Query<Speaker> q = session.createNamedQuery("Speaker.findBySession", Speaker.class);
+        q.setParameter("sessionId", sessionId);
+
+        return q.getResultList();
     }
+    
     public Speaker updateOrInsert(Speaker entity) {
         Speaker fromDb = findSpeakerById(entity.getId());
         if (fromDb != null) {
