@@ -12,7 +12,7 @@ runs:
   steps:
     - run: >
         echo "installing graphviz"
-        apt install graphviz
+        apt-get install graphviz
       shell: bash
     - run: dot -V
       shell: bash
