@@ -10,8 +10,8 @@ inputs:
   manifests-dir:
     description: directory where application manifests are stored
     required: true
-  output-dir:
-    description: directory where generated netpol resources yaml files should be stored
+  output-file:
+    description: save and merge generated policies into a single yaml file
     required: true
   skip-tls-verify:
     description: 'Skip TLS certificate validation'
@@ -27,7 +27,7 @@ runs:
       shell: bash
     - id: generate-netpol
       run: |
-        ./roxctl netpol generate ${{ inputs.manifests-dir }} --output-dir ${{ inputs.output-dir }}
+        ./roxctl netpol generate ${{ inputs.manifests-dir }} --output-file ${{ inputs.output-file }}
       shell: bash
       env:
         ROX_API_TOKEN: ${{ inputs.api-token }}

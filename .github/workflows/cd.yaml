@@ -61,12 +61,23 @@ jobs:
         mkdir ${{ runner.temp }}/k8s
         kustomize build deploy/apps/overlays/dev --output ${{ runner.temp }}/k8s 
         ls -l ${{ runner.temp }}/k8s
-    #- name: generate network policies
-    #  if: ${{ inputs.generate-netpol }}
-    #  uses: ./.github/actions/roxctl
-    #  with:
-    #    central-endpoint:
-    #    api-token:
-    #    manifests-dir:
-    #    output-dir:
-        
+
+    - name: generate network policies
+      if: ${{ inputs.generate-netpol }}
+      uses: ./.github/actions/roxctl
+      with:
+        central-endpoint: ${{ secrets.ROX_CENTRAL_ENDPOINT}}
+        api-token: ${{ secrets.ROX_CENTRAL_ENDPOINT}}
+        manifests-dir: ${{ runner.temp }}/k8s
+        output-file: ${{ runner.temp }}/k8s/netpols.yaml
+
+    - name: deploy generated network policies to cluster
+      run: |
+        echo "deploying generated network policies to clsuter"
+        cat ${{ runner.temp }}/k8s/netpols.yaml | kubectl apply -n "sessionize" -f -
+
+    - name: save generated policies as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: network-policies
+        path: ${{ runner.temp }}/k8s/netpols.yaml
