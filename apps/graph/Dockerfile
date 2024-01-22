@@ -5,6 +5,7 @@ RUN npm install --global yarn -s &>/dev/null
 COPY  ./package*.json .
 RUN yarn install --frozen-lockfile --production 
 COPY dist  .
+COPY prisma .
 RUN ls 
 ENV NODE_ENV=production
 
