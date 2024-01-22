@@ -8,7 +8,7 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 8080
+      port: 4000
   selector:
     app: graph
     role: experience
