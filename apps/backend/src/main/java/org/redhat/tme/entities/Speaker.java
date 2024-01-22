@@ -18,20 +18,20 @@ import java.util.UUID;
         @NamedQuery(
             name = "Speaker.findByEvent",
             query = "SELECT DISTINCT s " +
-                    "FROM Speaker s "  +
-                    "JOIN Session se " +
-                    "JOIN Event e " +
-                    "WHERE s.id = se.speaker " +
-                    "AND se.event = e.id " +
-                    "AND e.id = :eventId"
+                    "FROM Speaker s, Session se, Event e "  +
+                    "JOIN s.id ON " +
+                    "se.speaker " +
+                    "JOIN se.event ON " +
+                    "e.id " +
+                    "WHERE e.id = :eventId"
         ),
         @NamedQuery(
             name = "Speaker.findBySession",
             query = "SELECT DISTINCT s " +
-                    "FROM Speaker s " +
-                    "JOIN Session se " +
-                    "WHERE s.id = se.speaker " +
-                    "AND se.id = :sessionId"
+                    "FROM Speaker s, Session se " +
+                    "JOIN s.id ON " +
+                    "se.speaker " +
+                    "WHERE se.id = :sessionId"
         ),
 })
 public class Speaker extends PanacheEntityBase {
