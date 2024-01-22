@@ -67,7 +67,7 @@ jobs:
       uses: ./.github/actions/roxctl
       with:
         central-endpoint: ${{ secrets.ROX_CENTRAL_ENDPOINT}}
-        api-token: ${{ secrets.ROX_CENTRAL_ENDPOINT}}
+        api-token: ${{ secrets.ROX_API_TOKEN }}
         manifests-dir: ${{ runner.temp }}/k8s
         output-file: ${{ runner.temp }}/k8s/netpols.yaml
 
