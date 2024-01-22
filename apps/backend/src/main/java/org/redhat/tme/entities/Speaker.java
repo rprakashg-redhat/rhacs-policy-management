@@ -30,9 +30,9 @@ import java.util.UUID;
             name = "Speaker.findBySession",
             query = "SELECT DISTINCT s " +
                     "FROM Speaker s, Session se " +
-                    "JOIN s.id " +
-                    "JOIN se.speaker " +
-                    "WHERE se.speaker = s.id " +
+                    "JOIN s.id sid " +
+                    "JOIN se.speaker ses " +
+                    "WHERE ses = sid " +
                     "AND se.id = :sessionId"
         ),
 })
