@@ -34,8 +34,6 @@ module "eks" {
             EOT
         }
      }
-     
-     depends_on = [ module.vpc ]
-     
+          
      tags = local.tags
 }
