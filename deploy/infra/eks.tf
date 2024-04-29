@@ -19,7 +19,12 @@ module "eks" {
         create_security_group = false
     }
 
-     eks_managed_node_groups = {
+    # This is to prevent from having issues provisioning Service Type Loadbalancer
+    node_security_group_tags = {
+        "kubernetes.io/cluster/${var.name}" = null
+    }
+    
+    eks_managed_node_groups = {
         one = {
             name = "node-group-1"
 
@@ -33,7 +38,7 @@ module "eks" {
             echo 'foo bar'
             EOT
         }
-     }
+    }
           
-     tags = local.tags
+    tags = local.tags
 }
